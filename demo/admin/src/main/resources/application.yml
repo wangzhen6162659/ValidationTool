@@ -1,0 +1,64 @@
+server:
+  port: 10003     #ָ������˿�
+  servlet:
+    context-path:
+#  undertow:
+#      io-threads: 4 # ����IO�߳���, ����Ҫִ�з�����������,���ǻḺ��������, Ĭ������ÿ��CPU����һ���߳�
+#      worker-threads: 80  # ���������̳߳�, ��ִ������servlet������������, undertow�������̳߳���ȡ���߳�,����ֵ����ȡ����ϵͳ�ĸ���
+#      buffer-size: 1024  # ���µ����û�Ӱ��buffer,��Щbuffer�����ڷ��������ӵ�IO����,�е�����netty�ĳػ��ڴ���� , ÿ��buffer�Ŀռ��С,ԽС�Ŀռ䱻����Խ���
+#      buffers-per-region: 1024  # ÿ���������buffer���� , ����pool�Ĵ�С��buffer-size * buffers-per-region
+#      direct-buffers: true  # �Ƿ�����ֱ���ڴ�
+spring:
+  application:
+    name: admin-server
+  datasource:
+      url: jdbc:mysql://127.0.0.1:3306/boke_main
+      username: root
+      password:
+      driver-class-name: com.mysql.jdbc.Driver
+      # ʹ��druid����Դ
+      type: com.alibaba.druid.pool.DruidDataSource
+  redis:
+      database: 0 # Redis数据库索引（默认为0）
+      host: 127.0.0.1  #Redis服务器地址
+      port: 6379 # Redis服务器连接端口
+      password: # Redis服务器连接密码（默认为空）
+      jedis:
+        pool:
+          max-active: 100
+          min-idle: 2
+          max-idle: 8
+demo:
+  port:
+    eureka: 8761
+    admin: ${server.port}
+  hostname:
+    eureka: 127.0.0.1
+    admin: 127.0.0.1
+  context-path:
+    eureka: /eurka-server
+    admin: ${server.servlet.context-path}
+mybatis:
+  typeAliasesPackage: com.example.admin.entity
+  mapperLocations: classpath:mapper/*.xml
+
+eureka:
+  instance:
+    status-page-url: http://${demo.hostname.admin}:${demo.port.admin}/swagger-ui.html
+    preferIpAddress: true
+    ip-address: ${demo.hostname.admin}
+    instance-id: ${demo.hostname.admin}:${server.port}${server.servlet.context-path}
+  client:
+    serviceUrl:
+      defaultZone: http://${demo.hostname.eureka}:${demo.port.eureka}${demo.context-path.eureka}/eureka/
+
+
+swagger2:
+  admin-map:
+    title:
+    description:
+    base-path: /api/public
+    impl-package: com.example.admin.controller.api.impl
+  contact-name: wz
+  contact-email: wz6162659@163.com
+  host: ${demo.hostname.eureka}:${demo.port.admin}
